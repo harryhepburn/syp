@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-import numpy as np
+import plotly.graph_objs as go
 
 # Create the DataFrame
 data = {
@@ -37,48 +37,55 @@ def create_streamlit_app():
     zon_options = df['Zon Taburan Hujan'].unique()
     kelas_options = df['Kelas Tanah'].unique()
     topografi_options = df['Topografi'].unique()
-    tahun_options = df['Tahun Tuai'].unique()
     
     # Dropdown selections
     selected_zon = st.sidebar.selectbox('Pilih Zon Taburan Hujan', zon_options)
     selected_kelas = st.sidebar.selectbox('Pilih Kelas Tanah', kelas_options)
     selected_topografi = st.sidebar.selectbox('Pilih Topografi', topografi_options)
-    selected_tahun = st.sidebar.selectbox('Pilih Tahun Tuai', tahun_options)
     
     # Filter the dataframe based on selections
     filtered_df = df[
         (df['Zon Taburan Hujan'] == selected_zon) & 
         (df['Kelas Tanah'] == selected_kelas) & 
-        (df['Topografi'] == selected_topografi) & 
-        (df['Tahun Tuai'] == selected_tahun)
+        (df['Topografi'] == selected_topografi)
     ]
     
     # Display results
     st.header('Hasil Analisis')
     
     if not filtered_df.empty:
-        st.write('### Potensi Hasil:', filtered_df['Potensi Hasil'].values[0])
+        # Create line graph
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(
+            x=filtered_df['Tahun Tuai'], 
+            y=filtered_df['Potensi Hasil'], 
+            mode='lines+markers',
+            name=f'{selected_topografi} Topografi'
+        ))
         
-        # Visualization
-        st.subheader('Grafik Potensi Hasil Berdasarkan Topografi')
-        chart_data = df.groupby('Topografi')['Potensi Hasil'].mean().reset_index()
-        st.bar_chart(chart_data.set_index('Topografi'))
+        fig.update_layout(
+            title=f'Potensi Hasil untuk {selected_topografi} Topografi',
+            xaxis_title='Tahun Tuai',
+            yaxis_title='Potensi Hasil (Kg/Pokok)',
+            height=400
+        )
+        
+        st.plotly_chart(fig)
         
         # Additional information
-        st.subheader('Informasi Tambahan')
+        st.subheader('Statistik Potensi Hasil')
         col1, col2 = st.columns(2)
         with col1:
-            st.metric('Zon Taburan Hujan', selected_zon)
-            st.metric('Kelas Tanah', selected_kelas)
+            st.metric('Rata-rata Potensi Hasil', f"{filtered_df['Potensi Hasil'].mean():.2f}")
+            st.metric('Potensi Hasil Minimum', filtered_df['Potensi Hasil'].min())
         with col2:
-            st.metric('Topografi', selected_topografi)
-            st.metric('Tahun Tuai', selected_tahun)
+            st.metric('Potensi Hasil Maksimum', filtered_df['Potensi Hasil'].max())
     else:
         st.warning('Tidak ada data yang sesuai dengan kriteria pilihan.')
     
     # Raw data display (optional)
     if st.checkbox('Tampilkan Data Mentah'):
-        st.dataframe(df)
+        st.dataframe(filtered_df)
 
 # Save the Streamlit app script
 if __name__ == '__main__':
@@ -88,5 +95,5 @@ if __name__ == '__main__':
 # Instructions for running the app
 print("To run this Streamlit app:")
 print("1. Save this script as `app.py`")
-print("2. Install required libraries: pip install streamlit pandas")
+print("2. Install required libraries: pip install streamlit pandas plotly")
 print("3. Run the app: streamlit run app.py")
