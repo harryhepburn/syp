@@ -119,14 +119,7 @@ def create_interactive_performance_chart(df, rainfall_zone, soil_class, topograp
     # Display the chart
     st.plotly_chart(fig, use_container_width=True)
 
-# In your main Streamlit app
-st.subheader('Performance Trend')
-create_interactive_performance_chart(
-    df, 
-    rainfall_zone=rainfall_zone, 
-    soil_class=soil_class, 
-    topography=topography
-)
+
 
 if __name__ == '__main__':
     main()
