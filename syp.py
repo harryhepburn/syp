@@ -1,99 +1,82 @@
 import streamlit as st
 import pandas as pd
-import plotly.graph_objs as go
+import numpy as np
 
-# Create the DataFrame
-data = {
-    'Zon Taburan Hujan': ['Tinggi 1'] * 75,
-    'Kelas Tanah': ['1'] * 75,
-    'Topografi': (
-        ['Rata'] * 25 + 
-        ['Beralun'] * 25 + 
-        ['Berbukit'] * 25
-    ),
-    'Tahun Tuai': list(range(1, 26)) * 3,
-    'Potensi Hasil': (
-        [18, 23, 30, 32, 35, 35, 35, 35, 35, 35, 
-         35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 
-         35, 33, 32, 31, 31] +
-        [16, 21, 28, 30, 30, 30, 30, 30, 30, 30, 
-         30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 
-         30, 29, 28, 25, 25] +
-        [10, 15, 20, 23, 25, 25, 25, 25, 25, 25, 
-         25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 
-         25, 24, 23, 20, 20]
-    )
-}
+# Load the dataset
+@st.cache_data
+def load_data():
+    data = pd.read_csv('SYP.csv')
+    return data
 
-df = pd.DataFrame(data)
-
-def create_streamlit_app():
-    st.title('Analisis Potensi Hasil Sawit')
-    
-    # Sidebar for input selections
-    st.sidebar.header('Pilih Kriteria')
-    
-    # Unique values for each attribute
-    zon_options = df['Zon Taburan Hujan'].unique()
-    kelas_options = df['Kelas Tanah'].unique()
-    topografi_options = df['Topografi'].unique()
-    
-    # Dropdown selections
-    selected_zon = st.sidebar.selectbox('Pilih Zon Taburan Hujan', zon_options)
-    selected_kelas = st.sidebar.selectbox('Pilih Kelas Tanah', kelas_options)
-    selected_topografi = st.sidebar.selectbox('Pilih Topografi', topografi_options)
-    
-    # Filter the dataframe based on selections
+def predict_syp(df, rainfall_zone, soil_class, topography, year):
+    """
+    Predict Site Yield Potential based on input parameters
+    """
+    # Validate inputs
     filtered_df = df[
-        (df['Zon Taburan Hujan'] == selected_zon) & 
-        (df['Kelas Tanah'] == selected_kelas) & 
-        (df['Topografi'] == selected_topografi)
+        (df['Zon Taburan Hujan'] == rainfall_zone) & 
+        (df['Kelas Tanah'] == soil_class) & 
+        (df['Topografi'] == topography)
     ]
     
-    # Display results
-    st.header('Hasil Analisis')
+    if filtered_df.empty:
+        return None
     
-    if not filtered_df.empty:
-        # Create line graph
-        fig = go.Figure()
-        fig.add_trace(go.Scatter(
-            x=filtered_df['Tahun Tuai'], 
-            y=filtered_df['Potensi Hasil'], 
-            mode='lines+markers',
-            name=f'{selected_topografi} Topografi'
-        ))
-        
-        fig.update_layout(
-            title=f'Potensi Hasil untuk {selected_topografi} Topografi',
-            xaxis_title='Tahun Tuai',
-            yaxis_title='Potensi Hasil (Kg/Pokok)',
-            height=400
-        )
-        
-        st.plotly_chart(fig)
-        
-        # Additional information
-        st.subheader('Statistik Potensi Hasil')
-        col1, col2 = st.columns(2)
-        with col1:
-            st.metric('Rata-rata Potensi Hasil', f"{filtered_df['Potensi Hasil'].mean():.2f}")
-            st.metric('Potensi Hasil Minimum', filtered_df['Potensi Hasil'].min())
-        with col2:
-            st.metric('Potensi Hasil Maksimum', filtered_df['Potensi Hasil'].max())
-    else:
-        st.warning('Tidak ada data yang sesuai dengan kriteria pilihan.')
+    # Find closest year or interpolate
+    closest_year_row = filtered_df.iloc[(filtered_df['Tahun Tuai'] - year).abs().argsort()[:1]]
     
-    # Raw data display (optional)
-    if st.checkbox('Tampilkan Data Mentah'):
-        st.dataframe(filtered_df)
+    return closest_year_row['Potensi Hasil'].values[0]
 
-# Save the Streamlit app script
+def main():
+    st.title('Palm Oil Site Yield Potential (SYP) Calculator')
+    
+    # Load data
+    df = load_data()
+    
+    # Sidebar for input
+    st.sidebar.header('Input Parameters')
+    
+    # Rainfall Zone Selection
+    rainfall_zones = df['Zon Taburan Hujan'].unique()
+    rainfall_zone = st.sidebar.selectbox('Rainfall Zone', rainfall_zones)
+    
+    # Soil Class Selection
+    soil_classes = df['Kelas Tanah'].unique()
+    soil_class = st.sidebar.selectbox('Soil Class', soil_classes)
+    
+    # Topography Selection
+    topographies = df['Topografi'].unique()
+    topography = st.sidebar.selectbox('Topography', topographies)
+    
+    # Year Selection
+    max_year = df['Tahun Tuai'].max()
+    min_year = df['Tahun Tuai'].min()
+    year = st.sidebar.slider('Planting Year', min_value=min_year, max_value=max_year, value=min_year)
+    
+    # Predict SYP
+    if st.sidebar.button('Calculate SYP'):
+        syp = predict_syp(df, rainfall_zone, soil_class, topography, year)
+        
+        if syp is not None:
+            st.success(f'Estimated Site Yield Potential: {syp:.2f} metric tons per hectare')
+            
+            # Additional Visualization
+            st.subheader('Performance Trend')
+            year_data = df[
+                (df['Zon Taburan Hujan'] == rainfall_zone) & 
+                (df['Kelas Tanah'] == soil_class) & 
+                (df['Topografi'] == topography)
+            ]
+            st.line_chart(year_data.set_index('Tahun Tuai')['Potensi Hasil'])
+        else:
+            st.error('No matching data found. Please adjust your parameters.')
+    
+    # Dataset Information
+    st.sidebar.markdown('### Dataset Overview')
+    st.sidebar.write(f'Total Records: {len(df)}')
+    st.sidebar.write(f'Unique Rainfall Zones: {len(rainfall_zones)}')
+    st.sidebar.write(f'Unique Soil Classes: {len(soil_classes)}')
+    st.sidebar.write(f'Unique Topographies: {len(topographies)}')
+
 if __name__ == '__main__':
-    import streamlit as st
-    create_streamlit_app()
-
-# Instructions for running the app
-print("To run this Streamlit app:")
-print("1. Save this script as `app.py`")
-print("2. Install required libraries: pip install streamlit pandas plotly")
-print("3. Run the app: streamlit run app.py")
+    main()
