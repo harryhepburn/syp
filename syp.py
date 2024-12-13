@@ -1,6 +1,8 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
+import plotly.express as px
+import plotly.graph_objs as go
 
 # Load the dataset
 @st.cache_data
@@ -72,11 +74,59 @@ def main():
             st.error('No matching data found. Please adjust your parameters.')
     
     # Dataset Information
-    st.sidebar.markdown('### Dataset Overview')
-    st.sidebar.write(f'Total Records: {len(df)}')
-    st.sidebar.write(f'Unique Rainfall Zones: {len(rainfall_zones)}')
-    st.sidebar.write(f'Unique Soil Classes: {len(soil_classes)}')
-    st.sidebar.write(f'Unique Topographies: {len(topographies)}')
+    st.sidebar.markdown('### Dibangunkan oleh Rafizan Samian, Jabatan Strategi & Transformasi FELDA')
+
+
+###
+
+
+
+def create_interactive_performance_chart(df, rainfall_zone, soil_class, topography):
+    # Filter data based on selected parameters
+    year_data = df[
+        (df['Zon Taburan Hujan'] == rainfall_zone) & 
+        (df['Kelas Tanah'] == soil_class) & 
+        (df['Topografi'] == topography)
+    ]
+    
+    # Create interactive Plotly line chart
+    fig = px.line(
+        year_data, 
+        x='Tahun Tuai', 
+        y='Potensi Hasil',
+        title=f'Performance Trend: {rainfall_zone}, {soil_class}, {topography}',
+        labels={
+            'Tahun Tuai': 'Harvest Year',
+            'Potensi Hasil': 'Potential Yield'
+        },
+        markers=True
+    )
+    
+    # Customize hover template
+    fig.update_traces(
+        hovertemplate='<b>Year</b>: %{x}<br><b>Potential Yield</b>: %{y}<extra></extra>'
+    )
+    
+    # Adjust layout for better readability
+    fig.update_layout(
+        hoverlabel=dict(
+            bgcolor="white",
+            font_size=16,
+            font_family="Rockwell"
+        )
+    )
+    
+    # Display the chart
+    st.plotly_chart(fig, use_container_width=True)
+
+# In your main Streamlit app
+st.subheader('Performance Trend')
+create_interactive_performance_chart(
+    df, 
+    rainfall_zone=rainfall_zone, 
+    soil_class=soil_class, 
+    topography=topography
+)
 
 if __name__ == '__main__':
     main()
