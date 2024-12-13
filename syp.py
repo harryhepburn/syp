@@ -77,48 +77,6 @@ def main():
     st.sidebar.markdown('### Dibangunkan oleh Rafizan Samian, Jabatan Strategi & Transformasi FELDA')
 
 
-###
-
-
-
-def create_interactive_performance_chart(df, rainfall_zone, soil_class, topography):
-    # Filter data based on selected parameters
-    year_data = df[
-        (df['Zon Taburan Hujan'] == rainfall_zone) & 
-        (df['Kelas Tanah'] == soil_class) & 
-        (df['Topografi'] == topography)
-    ]
-    
-    # Create interactive Plotly line chart
-    fig = px.line(
-        year_data, 
-        x='Tahun Tuai', 
-        y='Potensi Hasil',
-        title=f'Performance Trend: {rainfall_zone}, {soil_class}, {topography}',
-        labels={
-            'Tahun Tuai': 'Harvest Year',
-            'Potensi Hasil': 'Potential Yield'
-        },
-        markers=True
-    )
-    
-    # Customize hover template
-    fig.update_traces(
-        hovertemplate='<b>Year</b>: %{x}<br><b>Potential Yield</b>: %{y}<extra></extra>'
-    )
-    
-    # Adjust layout for better readability
-    fig.update_layout(
-        hoverlabel=dict(
-            bgcolor="white",
-            font_size=16,
-            font_family="Rockwell"
-        )
-    )
-    
-    # Display the chart
-    st.plotly_chart(fig, use_container_width=True)
-
 
 
 if __name__ == '__main__':
