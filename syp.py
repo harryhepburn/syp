@@ -2,55 +2,80 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-# Function to load SYP.csv
-@st.cache_data
+# Function to load SYP.csv with improved error handling
+@st.cache_data(ttl=3600)  # Cache for 1 hour
 def load_data():
     try:
-        data = pd.read_csv('SYP.csv')
+        data = pd.read_csv('SYP.csv', encoding='utf-8')
+        # Additional data validation
+        required_columns = ['Zon Taburan Hujan', 'Kelas Tanah', 'Topografi', 'Tahun Tuai', 'Potensi Hasil']
+        for col in required_columns:
+            if col not in data.columns:
+                st.error(f"Missing required column: {col}")
+                return None
         return data
     except FileNotFoundError:
         st.error("File 'SYP.csv' not found. Please ensure the file is in the correct directory.")
         return None
+    except pd.errors.EmptyDataError:
+        st.error("The CSV file is empty.")
+        return None
+    except Exception as e:
+        st.error(f"An error occurred while reading the file: {e}")
+        return None
 
 # Function to predict Site Yield Potential
 def predict_syp(df, rainfall_zone, soil_class, topography, year):
-    filtered_df = df[
-        (df['Zon Taburan Hujan'] == rainfall_zone) & 
-        (df['Kelas Tanah'] == soil_class) & 
-        (df['Topografi'] == topography)
-    ]
-    
-    if filtered_df.empty:
+    try:
+        filtered_df = df[
+            (df['Zon Taburan Hujan'] == rainfall_zone) & 
+            (df['Kelas Tanah'] == soil_class) & 
+            (df['Topografi'] == topography)
+        ]
+        
+        if filtered_df.empty:
+            return None
+        
+        # Find closest year
+        closest_row = filtered_df.iloc[(filtered_df['Tahun Tuai'] - year).abs().argsort()[:1]]
+        return closest_row['Potensi Hasil'].values[0]
+    except Exception as e:
+        st.error(f"Error in prediction: {e}")
         return None
-    
-    # Find closest year
-    closest_row = filtered_df.iloc[(filtered_df['Tahun Tuai'] - year).abs().argsort()[:1]]
-    return closest_row['Potensi Hasil'].values[0]
 
 # Function to create performance trend chart
 def create_performance_trend_chart(year_data):
-    fig = px.line(
-        year_data, 
-        x='Tahun Tuai', 
-        y='Potensi Hasil',
-        title='Performance Trend',
-        labels={'Tahun Tuai': 'Year', 'Potensi Hasil': 'Yield Potential (MT/ha)'},
-        markers=True
-    )
-    return fig
+    try:
+        fig = px.line(
+            year_data, 
+            x='Tahun Tuai', 
+            y='Potensi Hasil',
+            title='Performance Trend',
+            labels={'Tahun Tuai': 'Year', 'Potensi Hasil': 'Yield Potential (MT/ha)'},
+            markers=True
+        )
+        return fig
+    except Exception as e:
+        st.error(f"Error creating chart: {e}")
+        return None
 
+# Function to get topography table
 def get_topography_table():
     data = {
         "TOPOGRAFI": ["Beralun Lemah", "Beralun Sederhana", "Berbukit"],
         "KOD": ["G", "M", "H"],
-        "KETERANGAN": ["Kurang Daripada Empat (4) Darjah", "Lima (5) Hingga Dua Belas (12) Darjah", "Melebihi Dua Belas (12) Darjah"],
-        
+        "KETERANGAN": [
+            "Kurang Daripada Empat (4) Darjah", 
+            "Lima (5) Hingga Dua Belas (12) Darjah", 
+            "Melebihi Dua Belas (12) Darjah"
+        ]
     }
     return pd.DataFrame(data)
 
+# Main application function
 def main():
     st.title("Palm Oil Site Yield Potential (SYP) Calculator")
-
+    
     # Load SYP Data
     df = load_data()
     if df is None:
@@ -64,21 +89,28 @@ def main():
         soil_class = st.selectbox("Soil Class", df['Kelas Tanah'].unique())
     with col3:
         topography = st.selectbox("Topography", df['Topografi'].unique())
-    year = st.slider("Planting Year", int(df['Tahun Tuai'].min()), int(df['Tahun Tuai'].max()))
-
+    
+    year = st.slider(
+        "Planting Year", 
+        min_value=int(df['Tahun Tuai'].min()), 
+        max_value=int(df['Tahun Tuai'].max()),
+        value=int(df['Tahun Tuai'].min())
+    )
+    
     if st.button("Calculate Site Yield Potential"):
         syp = predict_syp(df, rainfall_zone, soil_class, topography, year)
-        if syp:
+        if syp is not None:
             st.success(f"Estimated Yield Potential: {syp:.2f} MT/ha")
         else:
-            st.error("No matching data found.")
+            st.warning("No matching data found for the selected criteria.")
     
-    # Display Soil Class Table
+    # Display Topography Table
     st.subheader("Maklumat Topografi")
     topo_df = get_topography_table()
     st.dataframe(topo_df)
-
+    
     st.markdown("### Developed by Rafizan Samian - FELDA Strategy & Transformation Department")
 
+# Run the main application
 if __name__ == "__main__":
     main()
