@@ -131,33 +131,54 @@ def main():
         else:
             st.error('No matching data found. Please adjust your parameters.')
     
-    st.write("### Kategori Jangkitan Ganoderma:")
 
-        # Create a DataFrame for the categories
-    df_categories = pd.DataFrame({
-        'Kategori': ['A', 'B', 'C', 'D', 'E', 'F'],
-        'Deskripsi': [
-            '1. Pokok subur, tiada frond skirting<br>2. Masih produktif<br>3. Ada jasad berbuah',
-            '1. Pokok tidak subur<br>2. Ada frond skirting<br>3. Tidak produktif<br>4. Ada jasad berbuah',
-            '1. Pokok yang telah tumbang<br>2. Batang patah di bahagian atas atau bawah<br>3. Mati<br>4. Ada jasad berbuah',
-            '1. Pokok tidak subur atau kelihatan stress<br>2. Ada frond skirting<br>3. Tiada Jasad Berbuah<br>4. Tiada batang mereput dan miselium putih pada pangkal pokok',
-            'Pokok Sihat',
-            '1. Pokok selain kategori di atas<br>2. Menunjukkan simptom kekurangan nutrien atau water stress'
-        ]
-    })
 
-    # Apply styling to the DataFrame
-    styled_df = df_categories.style.set_properties(**{
-        'text-align': 'left',
-        'padding': '10px',
-        'border': '1px solid #ddd'
-    }).set_table_styles([
-        {'selector': 'th', 'props': [('text-align', 'center')]},
-        {'selector': 'td', 'props': [('text-align', 'left')]}
-    ]).apply(lambda x: ['background-color: #D3D3D3' if i%2==0 else '' for i in range(len(x))], axis=0)
+# Data for the table
+data = {
+    "Kelas Tanah": ["Kelas 1 (Sangat sesuai)"] * 2 + ["Kelas 2 (Sesuai)"] * 28 + ["Kelas 3 (Kurang sesuai)"] * 30,
+    "Jenis Tanah": [
+        "SELANGOR", "KANGKONG", "BRIAH", "TELONG", "SEGAMAT", "KUANTAN", "BENTA", "SK. MAS", "KATONG", "SABAK",
+        "YONG PENG", "TOM YONG", "KEMUNING", "JERANGAU", "JEMBANG", "JELAI", "CHAMP", "MUSANG", "SEMPAKA",
+        "KAMPONG KOLAM", "MASSA", "LENGKAWI", "NENASI", "BATANG MERBAU", "LIMBAT", "TEBOK", "KALLA", "COLLUVIUM",
+        "BUKIT", "ORGANIC ALLUVIUM", "LOCAL ALLUVIUM", "BUNGOR", "CHEROK", "SEMUPURNA/IMD", "BATANG", "BESAI",
+        "RAU", "TAPAH", "RASAU", "BUNGOR", "ROMPIN",
+        "RUDUA", "MUNCHONG/L", "BUNGOR/S", "DURIAN", "CHENIAN/S", "DUTALAN", "BATU LAPAN", "HARRADIL", "MERAPOH/L",
+        "MT. HAIL", "MALACCA", "HARRADS", "GAJAH MATI", "MERAPOH", "HARAD/ACAD", "KEDAH", "TAY", "SEREMBAN", "KANTIS",
+        "KALI BUKIT", "DURIAN ALAM", "SEMPORNA/S", "BATU/M", "PAGOH", "ORGANIC CLAY MUCK", "SANDY COLLUVIUM", 
+        "SRANTI", "KUALA BERANG", "BUKIT TUKU", "KAMP. KUBUR", "ULU TIRAM", "JABIL", "SEDIRANG", "MARANG", 
+        "TAPAH", "BINA", "KUALA BRANG", "PEAT/D"
+    ],
+    "Kod": [
+        "SLR", "KGR", "BRH", "TLG", "SGT", "KTN", "BNT", "SMS", "KTG", "SBK",
+        "YPG", "TYN", "KMG", "JRN", "JMB", "JLC", "CPG", "MUS", "SPA", "KKL",
+        "MSI", "LKI", "NBI", "MRB", "LBT", "TBK", "KLL", "COL", "BKT", "ORA",
+        "LRA", "BGR", "CRK", "SPAMD", "BTG", "BSH", "RAU", "TGH", "RAS", "RGR", "RPN",
+        "RDA", "MUNL", "BRS", "DUR", "CHNS", "DTL", "BNL", "HRDL", "MRPL", "MTH",
+        "MLC", "HRDS", "GMH", "MRP", "HRA", "KDH", "TAY", "SRB", "KNT", "KBUK",
+        "DAL", "SMP", "BTM", "PGH", "OCM", "SCL", "SRA", "KBG", "BKTK", "KPR",
+        "ULT", "JBL", "SDR", "MRG", "TGH", "BNA", "KLG/KBG", "PET/D"
+    ],
+    "Kumpulan": [
+        1, 1, 2, 2, 2, 3, 3, 3, 3, 3,
+        3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
+        3, 3, 4, 4, 4, 4, 4, 4, 4, 4,
+        4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
+        4, 4, 5, 5, 5, 5, 5, 5, 5, 5,
+        5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+        5, 5, 5, 5, 5, 5, 5, 6, 6, 6,
+        6, 6, 6, 6, 6, 6, 6
+    ]
+}
 
-    # Display the styled DataFrame
-    st.write(styled_df.to_html(escape=False), unsafe_allow_html=True)
+# Create the DataFrame
+df = pd.DataFrame(data)
+
+# Streamlit App
+st.title("Kelas Tanah Table")
+
+
+# Display the table
+st.dataframe(df)
 
     # Footer
     st.markdown('### Developed by Rafizan Samian - FELDA Strategy & Transformation Department')
