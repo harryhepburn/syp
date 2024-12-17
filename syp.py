@@ -131,7 +131,7 @@ def main():
         else:
             st.error('No matching data found. Please adjust your parameters.')
     
-       st.write("### Kategori Jangkitan Ganoderma:")
+    st.write("### Kategori Jangkitan Ganoderma:")
 
         # Create a DataFrame for the categories
     df_categories = pd.DataFrame({
