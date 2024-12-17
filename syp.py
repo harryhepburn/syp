@@ -246,15 +246,13 @@ def main():
     ## _Site Yield Potential (SYP) Calculator_
 
     ### 🎯 Objektif
-    Aplikasi membantu pekerja industri kelapa sawit dalam:
-    - Mengira potensi hasil tapak
-    - Mencari maklumat klasifikasi tanah
-    - Menganalisis trend prestasi
+    Aplikasi membantu pekerja industri kelapa sawit dalam mengira potensi hasil sawit berdasarkan maklumat taburan hujan, kelas tanah dan topografi. 
+
 
     ### ✨ Ciri Utama
-    - Kalkulator Potensi Hasil
-    - Pencarian Klasifikasi Tanah
-    - Visualisasi Trend Prestasi
+    - Kalkulator Potensi Hasil Untuk Tahun Tuaian
+    - Visualisasi Potensi Hasil Untuk 25 Tahun
+    - Maklumat Jenis dan Kelas Tanah
 
     ### 👤 Pembangunan
     **Dibangunkan oleh:**
