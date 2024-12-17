@@ -191,45 +191,56 @@ def main():
     soil_df = get_soilclass_table()
     st.dataframe(soil_df)
 
-    if st.checkbox('Klik untuk Maklumat Lanjut Berkenaan Jenis Tanah'):
-        st.subheader('Soil Classification Lookup')
+    if st.checkbox('Klik untuk Maklumat Lanjut Berkenaan Kelas Tanah'):
+        st.subheader('Kelas dan Jenis Tanah')
         
             # Create columns for filtering
-        col1, col2, col3, col4 = st.columns(4)
+        col1, col2, col3, col4, col5 = st.columns(5)
         
         with col1:
             # Kelas Tanah Filter
-            kelas_tanah_options = ['All'] + list(soil_class_df['Kelas Tanah'].unique())
-            selected_kelas_tanah = st.selectbox('Soil Class', kelas_tanah_options)
+            kelas_tanah_options = ['Semua'] + list(soil_class_df['Kelas Tanah'].unique())
+            selected_kelas_tanah = st.selectbox('Kelas Tanah', kelas_tanah_options)
         
         with col2:
             # Jenis Tanah Filter
-            jenis_tanah_options = ['All'] + list(soil_class_df['Jenis Tanah'].unique())
-            selected_jenis_tanah = st.selectbox('Soil Type', jenis_tanah_options)
+            jenis_tanah_options = ['Semua'] + list(soil_class_df['Jenis Tanah'].unique())
+            selected_jenis_tanah = st.selectbox('Jenis Tanah', jenis_tanah_options)
         
         with col3:
             # Kod Filter
-            kod_options = ['All'] + list(soil_class_df['Kod'].unique())
-            selected_kod = st.selectbox('Soil Code', kod_options)
+            kod_options = ['Semua'] + list(soil_class_df['Kod'].unique())
+            selected_kod = st.selectbox('Kod', kod_options)
         
         with col4:
             # Kumpulan Filter
-            kumpulan_options = ['All'] + list(map(str, soil_class_df['Kumpulan'].unique()))
-            selected_kumpulan = st.selectbox('Group', kumpulan_options)
+            kumpulan_options = ['Semua'] + list(map(str, soil_class_df['Kumpulan'].unique()))
+            selected_kumpulan = st.selectbox('Kumpulan', kumpulan_options)
+
+        with col5:
+            # Reset Button
+            st.write("") # Add some vertical space to align with other dropdowns
+                if st.button('Reset Filters'):
+                # Use Streamlit's session state to reset selections
+                st.session_state.kelas_tanah_select = 'Semua'
+                st.session_state.jenis_tanah_select = 'Semua'
+                st.session_state.kod_select = 'Semua'
+                st.session_state.kumpulan_select = 'Semua'
+                st.experimental_rerun()  # Rerun the app to reset filters
         
         # Apply Filters
         filtered_df = soil_class_df.copy()
         
-        if selected_kelas_tanah != 'All':
+        if selected_kelas_tanah != 'Semua':
             filtered_df = filtered_df[filtered_df['Kelas Tanah'] == selected_kelas_tanah]
         
-        if selected_jenis_tanah != 'All':
+        if selected_jenis_tanah != 'Semua':
             filtered_df = filtered_df[filtered_df['Jenis Tanah'] == selected_jenis_tanah]
         
-        if selected_kod != 'All':
+        if selected_kod != 'Semua':
             filtered_df = filtered_df[filtered_df['Kod'] == selected_kod]
         
-        if selected_kumpulan != 'All':
+        if selected_kumpulan != 'Semua':
             filtered_df = filtered_df[filtered_df['Kumpulan'] == int(selected_kumpulan)]
         
         # Display Filtered Results
@@ -269,3 +280,6 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
+
