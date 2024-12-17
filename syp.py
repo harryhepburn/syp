@@ -48,7 +48,7 @@ def create_performance_trend_chart(year_data):
     
     # Customize hover template
     fig.update_traces(
-        hovertemplate='<b>Planting Year</b>: %{x}<br><b>Yield Potential</b>: %{y:.2f} metric tons/hectare<extra></extra>',
+        hovertemplate='<b>Tahun Tuai</b>: %{x}<br><b>SYP</b>: %{y:.2f} metrik tan/hektar<extra></extra>',
         line=dict(width=3),
         marker=dict(size=8)
     )
@@ -61,8 +61,8 @@ def create_performance_trend_chart(year_data):
             font_size=12,
             font_family="Arial"
         ),
-        xaxis_title='Planting Year',
-        yaxis_title='Site Yield Potential (metric tons/hectare)',
+        xaxis_title='Tahun Tuaian',
+        yaxis_title='Site Yield Potential (metrik tan/hektar)',
         height=450
     )
     
@@ -91,6 +91,18 @@ def get_rainfall_table():
         ]
     }
     return pd.DataFrame(datahujan)
+    
+def get_soilclass_table():
+    datatanah = {
+        "KELAS TANAH": ["Kelas 1", "Kelas 2", "Kelas 3"],
+        "KUMPULAN TANAH": ["1 dan 2", "3 dan 4", "5 dan 6"],
+        "KETERANGAN": [
+            "Sangat Sesuai untuk Tanaman Sawit", 
+            "Sesuai untuk Tanaman Sawit", 
+            "Kurang Sesuai untuk Tanaman Sawit"
+        ]
+    }
+    return pd.DataFrame(datatanah)
     
 def main():
     st.title('Kalkulator Potensi Hasil Sawit')
@@ -126,7 +138,7 @@ def main():
         syp = predict_syp(df, rainfall_zone, soil_class, topography, year)
         
         if syp is not None:
-            st.success(f'Anggaran SYP: {syp:.2f} metric tons per hectare')
+            st.success(f'Anggaran SYP: {syp:.2f} metrik tan per hektar')
             
             # Additional Visualization with Plotly
             st.subheader('Tren Potensi Hasil (SYP) Untuk 25 Tahun')
@@ -148,9 +160,9 @@ def main():
                 
                 st.markdown(f"""
                 ### Rumusan SYP
-                - **Hasil Minimum**: {min_yield:.2f} metric tons/hectare
-                - **Hasil Maximum**: {max_yield:.2f} metric tons/hectare
-                - **Hasil Purata**: {avg_yield:.2f} metric tons/hectare
+                - **Hasil Minimum**: {min_yield:.2f} metrik tan/hektar
+                - **Hasil Maximum**: {max_yield:.2f} metrik tan/hektar
+                - **Hasil Purata**: {avg_yield:.2f} metrik tan/hektar
                 """)
         else:
             st.error('Tiada Data Ditemui. Ubah parameter anda.')
@@ -164,6 +176,11 @@ def main():
     st.subheader("Maklumat Zon Taburan Hujan")
     rain_df = get_rainfall_table()
     st.dataframe(rain_df)
+
+    # Display Soil Class Table
+    st.subheader("Maklumat Kelas Tanah")
+    soil_df = get_soilclass_table()
+    st.dataframe(soil_df)    
     
     # Footer
     st.markdown('### Dibangunkan oleh Rafizan Samian - Jabatan Strategi & Transformasi FELDA')
