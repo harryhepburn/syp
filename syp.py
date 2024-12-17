@@ -106,7 +106,7 @@ def get_soilclass_table():
     
 def main():
     st.title('Kalkulator Potensi Hasil Sawit')
-    st.title('_Site Yield Potential_ (SYP) _Calculator_')
+    st.subheader('_Site Yield Potential_ (SYP) _Calculator_')
     # Load data
     df = load_data()
     
