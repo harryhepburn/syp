@@ -4,46 +4,30 @@ import numpy as np
 import plotly.express as px
 import plotly.graph_objs as go
 
-# Function to load SYP.csv with improved error handling
-@st.cache_data(ttl=3600)  # Cache for 1 hour
+# Load the dataset
+@st.cache_data
 def load_data():
-    try:
-        data = pd.read_csv('SYP.csv', encoding='utf-8')
-        # Additional data validation
-        required_columns = ['Zon Taburan Hujan', 'Kelas Tanah', 'Topografi', 'Tahun Tuai', 'Potensi Hasil']
-        for col in required_columns:
-            if col not in data.columns:
-                st.error(f"Missing required column: {col}")
-                return None
-        return data
-    except FileNotFoundError:
-        st.error("File 'SYP.csv' not found. Please ensure the file is in the correct directory.")
-        return None
-    except pd.errors.EmptyDataError:
-        st.error("The CSV file is empty.")
-        return None
-    except Exception as e:
-        st.error(f"An error occurred while reading the file: {e}")
-        return None
+    data = pd.read_csv('SYP.csv')
+    return data
 
-# Function to predict Site Yield Potential
 def predict_syp(df, rainfall_zone, soil_class, topography, year):
-    try:
-        filtered_df = df[
-            (df['Zon Taburan Hujan'] == rainfall_zone) & 
-            (df['Kelas Tanah'] == soil_class) & 
-            (df['Topografi'] == topography)
-        ]
-        
-        if filtered_df.empty:
-            return None
-        
-        # Find closest year
-        closest_row = filtered_df.iloc[(filtered_df['Tahun Tuai'] - year).abs().argsort()[:1]]
-        return closest_row['Potensi Hasil'].values[0]
-    except Exception as e:
-        st.error(f"Error in prediction: {e}")
+    """
+    Predict Site Yield Potential based on input parameters
+    """
+    # Validate inputs
+    filtered_df = df[
+        (df['Zon Taburan Hujan'] == rainfall_zone) & 
+        (df['Kelas Tanah'] == soil_class) & 
+        (df['Topografi'] == topography)
+    ]
+    
+    if filtered_df.empty:
         return None
+    
+    # Find closest year or interpolate
+    closest_year_row = filtered_df.iloc[(filtered_df['Tahun Tuai'] - year).abs().argsort()[:1]]
+    
+    return closest_year_row['Potensi Hasil'].values[0]
 
 def create_performance_trend_chart(year_data):
     """
@@ -83,10 +67,9 @@ def create_performance_trend_chart(year_data):
     )
     
     return fig
-
-# Function to get topography table
+    
 def get_topography_table():
-    data = {
+    datatopo = {
         "TOPOGRAFI": ["Beralun Lemah", "Beralun Sederhana", "Berbukit"],
         "KOD": ["G", "M", "H"],
         "KETERANGAN": [
@@ -95,42 +78,58 @@ def get_topography_table():
             "Melebihi Dua Belas (12) Darjah"
         ]
     }
-    return pd.DataFrame(data)
+    return pd.DataFrame(datatopo)
 
-# Main application function
+def get_rainfall_table():
+    datahujan = {
+        "ZON TABURAN HUJAN": ["Lembap", "Sederhana Lembap", "Kering"],
+        "KOD": ["W", "M", "D"],
+        "KETERANGAN": [
+            "Menerima Hujan Melebihi 2500mm Setahun", 
+            "Menerima Hujan di Antara 1800mm - 2500mm Setahun", 
+            "Menerima Hujan kurang daripada 1800mm Setahun"
+        ]
+    }
+    return pd.DataFrame(datahujan)
+    
 def main():
-    st.title("Palm Oil Site Yield Potential (SYP) Calculator")
+    st.title('Kalkulator Potensi Hasil Sawit (_Site Yield Potential_ (SYP))')
     
-    # Load SYP Data
+    # Load data
     df = load_data()
-    if df is None:
-        return
     
-    # User Input: Rainfall Zone, Soil Class, Topography, Year
+    # Create columns for input
     col1, col2, col3 = st.columns(3)
+    
     with col1:
-        rainfall_zone = st.selectbox("Rainfall Zone", df['Zon Taburan Hujan'].unique())
+        # Rainfall Zone Selection
+        rainfall_zones = df['Zon Taburan Hujan'].unique()
+        rainfall_zone = st.selectbox('Zon Taburan Hujan', rainfall_zones)
+    
     with col2:
-        soil_class = st.selectbox("Soil Class", df['Kelas Tanah'].unique())
+        # Soil Class Selection
+        soil_classes = df['Kelas Tanah'].unique()
+        soil_class = st.selectbox('Kelas Tanah', soil_classes)
+    
     with col3:
-        topography = st.selectbox("Topography", df['Topografi'].unique())
+        # Topography Selection
+        topographies = df['Topografi'].unique()
+        topography = st.selectbox('Topografi', topographies)
     
-    year = st.slider(
-        "Planting Year", 
-        min_value=int(df['Tahun Tuai'].min()), 
-        max_value=int(df['Tahun Tuai'].max()),
-        value=int(df['Tahun Tuai'].min())
-    )
+    # Year Selection
+    max_year = df['Tahun Tuai'].max()
+    min_year = df['Tahun Tuai'].min()
+    year = st.slider('Tahun Tuaian', min_value=min_year, max_value=max_year, value=min_year)
     
-    if st.button("Calculate Site Yield Potential"):
+    # Calculate Button
+    if st.button('Kira SYP'):
         syp = predict_syp(df, rainfall_zone, soil_class, topography, year)
+        
         if syp is not None:
-            st.success(f"Estimated Yield Potential: {syp:.2f} MT/ha")
-        else:
-            st.warning("No matching data found for the selected criteria.")
-    
+            st.success(f'Anggaran SYP: {syp:.2f} metric tons per hectare')
+            
             # Additional Visualization with Plotly
-            st.subheader('Performance Trend')
+            st.subheader('Tren Potensi Hasil (SYP) Untuk 25 Tahun')
             year_data = df[
                 (df['Zon Taburan Hujan'] == rainfall_zone) & 
                 (df['Kelas Tanah'] == soil_class) & 
@@ -148,24 +147,21 @@ def main():
                 avg_yield = year_data['Potensi Hasil'].mean()
                 
                 st.markdown(f"""
-                ### Yield Insights
-                - **Minimum Yield**: {min_yield:.2f} metric tons/hectare
-                - **Maximum Yield**: {max_yield:.2f} metric tons/hectare
-                - **Average Yield**: {avg_yield:.2f} metric tons/hectare
+                ### Rumusan SYP
+                - **Hasil Minimum**: {min_yield:.2f} metric tons/hectare
+                - **Hasil Maximum**: {max_yield:.2f} metric tons/hectare
+                - **Hasil Purata**: {avg_yield:.2f} metric tons/hectare
                 """)
-    else:
-        st.error('No matching data found. Please adjust your parameters.')
-   
-    
+        else:
+            st.error('Tiada Data Ditemui. Ubah parameter anda.')
+
     # Display Topography Table
     st.subheader("Maklumat Topografi")
     topo_df = get_topography_table()
     st.dataframe(topo_df)
     
-    st.markdown("### Developed by Rafizan Samian - FELDA Strategy & Transformation Department")
+    # Footer
+    st.markdown('### Dibangunkan oleh Rafizan Samian - Jabatan Strategi & Transformasi FELDA')
 
-# Run the main application
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
-
-
