@@ -191,7 +191,7 @@ def main():
     soil_df = get_soilclass_table()
     st.dataframe(soil_df)
 
-    if st.checkbox('Tampilkan Data Mentah'):
+    if st.checkbox('Klik untuk Maklumat Lanjut Berkenaan Jenis Tanah'):
         st.subheader('Soil Classification Lookup')
         
             # Create columns for filtering
