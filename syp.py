@@ -222,11 +222,11 @@ def main():
             st.write("") # Add some vertical space to align with other dropdowns
             if st.button('Reset Filters'):
             # Use Streamlit's session state to reset selections
-            st.session_state.kelas_tanah_select = 'Semua'
-            st.session_state.jenis_tanah_select = 'Semua'
-            st.session_state.kod_select = 'Semua'
-            st.session_state.kumpulan_select = 'Semua'
-            st.experimental_rerun()  # Rerun the app to reset filters
+                st.session_state.kelas_tanah_select = 'Semua'
+                st.session_state.jenis_tanah_select = 'Semua'
+                st.session_state.kod_select = 'Semua'
+                st.session_state.kumpulan_select = 'Semua'
+                st.experimental_rerun()  # Rerun the app to reset filters
         
         # Apply Filters
         filtered_df = soil_class_df.copy()
