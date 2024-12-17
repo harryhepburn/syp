@@ -153,8 +153,8 @@ def main():
                 - **Maximum Yield**: {max_yield:.2f} metric tons/hectare
                 - **Average Yield**: {avg_yield:.2f} metric tons/hectare
                 """)
-            else:
-                st.error('No matching data found. Please adjust your parameters.')
+    else:
+        st.error('No matching data found. Please adjust your parameters.')
    
     
     # Display Topography Table
