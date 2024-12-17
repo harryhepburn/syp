@@ -40,8 +40,8 @@ def create_performance_trend_chart(year_data):
         y='Potensi Hasil',
         title='Performance Trend',
         labels={
-            'Tahun Tuai': 'Planting Year',
-            'Potensi Hasil': 'Site Yield Potential (metric tons/hectare)'
+            'Tahun Tuai': 'Tahun Tuaian',
+            'Potensi Hasil': 'Potensi Hasil (SYP) (metric tan/hektar)'
         },
         markers=True
     )
@@ -93,8 +93,8 @@ def get_rainfall_table():
     return pd.DataFrame(datahujan)
     
 def main():
-    st.title('Kalkulator Potensi Hasil Sawit (_Site Yield Potential_ (SYP))')
-    
+    st.title('Kalkulator Potensi Hasil Sawit')
+    st.title('_Site Yield Potential_ (SYP) _Calculator_')
     # Load data
     df = load_data()
     
@@ -159,6 +159,11 @@ def main():
     st.subheader("Maklumat Topografi")
     topo_df = get_topography_table()
     st.dataframe(topo_df)
+
+    # Display Rainfall Table
+    st.subheader("Maklumat Zon Taburan Hujan")
+    rain_df = get_rainfall_table()
+    st.dataframe(rain_df)
     
     # Footer
     st.markdown('### Dibangunkan oleh Rafizan Samian - Jabatan Strategi & Transformasi FELDA')
