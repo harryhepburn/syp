@@ -199,7 +199,7 @@ def main():
             kelas_tanah_options = ['All'] + list(soil_class_df['Kelas Tanah'].unique())
             selected_kelas_tanah = st.selectbox('Soil Class', kelas_tanah_options)
         
-         with col2:
+        with col2:
             # Jenis Tanah Filter
             jenis_tanah_options = ['All'] + list(soil_class_df['Jenis Tanah'].unique())
             selected_jenis_tanah = st.selectbox('Soil Type', jenis_tanah_options)
