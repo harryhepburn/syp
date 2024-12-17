@@ -131,6 +131,34 @@ def main():
         else:
             st.error('No matching data found. Please adjust your parameters.')
     
+       st.write("### Kategori Jangkitan Ganoderma:")
+
+        # Create a DataFrame for the categories
+    df_categories = pd.DataFrame({
+        'Kategori': ['A', 'B', 'C', 'D', 'E', 'F'],
+        'Deskripsi': [
+            '1. Pokok subur, tiada frond skirting<br>2. Masih produktif<br>3. Ada jasad berbuah',
+            '1. Pokok tidak subur<br>2. Ada frond skirting<br>3. Tidak produktif<br>4. Ada jasad berbuah',
+            '1. Pokok yang telah tumbang<br>2. Batang patah di bahagian atas atau bawah<br>3. Mati<br>4. Ada jasad berbuah',
+            '1. Pokok tidak subur atau kelihatan stress<br>2. Ada frond skirting<br>3. Tiada Jasad Berbuah<br>4. Tiada batang mereput dan miselium putih pada pangkal pokok',
+            'Pokok Sihat',
+            '1. Pokok selain kategori di atas<br>2. Menunjukkan simptom kekurangan nutrien atau water stress'
+        ]
+    })
+
+    # Apply styling to the DataFrame
+    styled_df = df_categories.style.set_properties(**{
+        'text-align': 'left',
+        'padding': '10px',
+        'border': '1px solid #ddd'
+    }).set_table_styles([
+        {'selector': 'th', 'props': [('text-align', 'center')]},
+        {'selector': 'td', 'props': [('text-align', 'left')]}
+    ]).apply(lambda x: ['background-color: #D3D3D3' if i%2==0 else '' for i in range(len(x))], axis=0)
+
+    # Display the styled DataFrame
+    st.write(styled_df.to_html(escape=False), unsafe_allow_html=True)
+
     # Footer
     st.markdown('### Developed by Rafizan Samian - FELDA Strategy & Transformation Department')
 
