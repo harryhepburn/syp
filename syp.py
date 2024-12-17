@@ -196,9 +196,9 @@ def main():
     - Menganalisis trend prestasi
 
     ### ✨ Ciri Utama
-    - **Kalkulator Potensi Hasil**
-    - **Pencarian Klasifikasi Tanah**
-    - **Visualisasi Trend Prestasi**
+    - Kalkulator Potensi Hasil
+    - Pencarian Klasifikasi Tanah
+    - Visualisasi Trend Prestasi
 
     ### 👤 Pembangunan
     **Dibangunkan oleh:**
@@ -206,8 +206,8 @@ def main():
     Jabatan Strategi & Transformasi
     FELDA
 
-    ### ℹ️ Petunjuk
-    *Nota: Keputusan adalah anggaran berdasarkan data historikal.*
+    ### ℹ️ Perhatian
+    *Nota: Keputusan adalah anggaran berdasarkan data terdahulu (historical data).*
     """)
 
     # Optional: Add a visual element or logo
