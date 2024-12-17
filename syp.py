@@ -74,28 +74,31 @@ def main():
     # Load data
     df = load_data()
     
-    # Sidebar for input
-    st.sidebar.header('Input Parameters')
+    # Create columns for input
+    col1, col2, col3 = st.columns(3)
     
-    # Rainfall Zone Selection
-    rainfall_zones = df['Zon Taburan Hujan'].unique()
-    rainfall_zone = st.sidebar.selectbox('Rainfall Zone', rainfall_zones)
+    with col1:
+        # Rainfall Zone Selection
+        rainfall_zones = df['Zon Taburan Hujan'].unique()
+        rainfall_zone = st.selectbox('Rainfall Zone', rainfall_zones)
     
-    # Soil Class Selection
-    soil_classes = df['Kelas Tanah'].unique()
-    soil_class = st.sidebar.selectbox('Soil Class', soil_classes)
+    with col2:
+        # Soil Class Selection
+        soil_classes = df['Kelas Tanah'].unique()
+        soil_class = st.selectbox('Soil Class', soil_classes)
     
-    # Topography Selection
-    topographies = df['Topografi'].unique()
-    topography = st.sidebar.selectbox('Topography', topographies)
+    with col3:
+        # Topography Selection
+        topographies = df['Topografi'].unique()
+        topography = st.selectbox('Topography', topographies)
     
     # Year Selection
     max_year = df['Tahun Tuai'].max()
     min_year = df['Tahun Tuai'].min()
-    year = st.sidebar.slider('Planting Year', min_value=min_year, max_value=max_year, value=min_year)
+    year = st.slider('Planting Year', min_value=min_year, max_value=max_year, value=min_year)
     
-    # Predict SYP
-    if st.sidebar.button('Calculate SYP'):
+    # Calculate Button
+    if st.button('Calculate Site Yield Potential'):
         syp = predict_syp(df, rainfall_zone, soil_class, topography, year)
         
         if syp is not None:
@@ -128,10 +131,8 @@ def main():
         else:
             st.error('No matching data found. Please adjust your parameters.')
     
-    # Dataset Information
-    st.sidebar.markdown('### Dibangunkan oleh Rafizan Samian - Jabatan Strategi & Transformasi FELDA')
-
-
+    # Footer
+    st.markdown('### Developed by Rafizan Samian - FELDA Strategy & Transformation Department')
 
 if __name__ == '__main__':
     main()
