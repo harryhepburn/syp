@@ -114,6 +114,9 @@ def main():
     st.subheader('_Site Yield Potential_ (SYP) _Calculator_')
     # Load data
     df = load_data()
+    soil_class_df = load_soil_class_data()
+
+    
     
     # Create columns for input
     col1, col2, col3 = st.columns(3)
