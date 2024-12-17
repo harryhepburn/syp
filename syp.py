@@ -66,6 +66,15 @@ def get_soil_class_table():
     }
     return pd.DataFrame(data)
 
+def get_topography_table():
+    data = {
+        "TOPOGRAFI": ["Beralun Lemah", "Beralun Sederhana", "Berbukit"],
+        "KOD": ["G", "M", "H"],
+        "KETERANGAN": ["Kurang Daripada Empat (4) Darjah", "Lima (5) Hingga Dua Belas (12) Darjah", "Melebihi Dua Belas (12) Darjah"],
+        
+    }
+    return pd.DataFrame(data)
+
 def main():
     st.title("Palm Oil Site Yield Potential (SYP) Calculator")
 
@@ -92,8 +101,8 @@ def main():
             st.error("No matching data found.")
     
     # Display Soil Class Table
-    st.subheader("Kelas Tanah Table")
-    soil_df = get_soil_class_table()
+    st.subheader("Maklumat Topografi")
+    soil_df = get_topography_table()
     st.dataframe(soil_df)
 
     st.markdown("### Developed by Rafizan Samian - FELDA Strategy & Transformation Department")
