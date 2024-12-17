@@ -185,5 +185,33 @@ def main():
     # Footer
     st.markdown('### Dibangunkan oleh Rafizan Samian - Jabatan Strategi & Transformasi FELDA')
 
+    st.sidebar.markdown("""
+    ## Kalkulator Potensi Hasil Sawit
+    ## _Site Yield Potential (SYP) Calculator_
+
+    ### 🎯 Objektif
+    Aplikasi membantu pekerja industri kelapa sawit dalam:
+    - Mengira potensi hasil tapak
+    - Mencari maklumat klasifikasi tanah
+    - Menganalisis trend prestasi
+
+    ### ✨ Ciri Utama
+    - **Kalkulator Potensi Hasil**
+    - **Pencarian Klasifikasi Tanah**
+    - **Visualisasi Trend Prestasi**
+
+    ### 👤 Pembangunan
+    **Dibangunkan oleh:**
+    Rafizan Samian
+    Jabatan Strategi & Transformasi
+    FELDA
+
+    ### ℹ️ Petunjuk
+    *Nota: Keputusan adalah anggaran berdasarkan data historikal.*
+    """)
+
+    # Optional: Add a visual element or logo
+    #st.sidebar.image("/path/to/felda_logo.png", use_column_width=True)
+
 if __name__ == '__main__':
     main()
