@@ -195,7 +195,7 @@ def main():
         st.subheader('Kelas dan Jenis Tanah')
         
             # Create columns for filtering
-        col1, col2, col3, col4, col5 = st.columns(5)
+        col1, col2, col3, col4 = st.columns(4)
         
         with col1:
             # Kelas Tanah Filter
@@ -217,16 +217,7 @@ def main():
             kumpulan_options = ['Semua'] + list(map(str, soil_class_df['Kumpulan'].unique()))
             selected_kumpulan = st.selectbox('Kumpulan', kumpulan_options)
 
-        with col5:
-            # Reset Button
-            st.write("") # Add some vertical space to align with other dropdowns
-            if st.button('Reset Filters'):
-            # Use Streamlit's session state to reset selections
-                st.session_state.kelas_tanah_select = 'Semua'
-                st.session_state.jenis_tanah_select = 'Semua'
-                st.session_state.kod_select = 'Semua'
-                st.session_state.kumpulan_select = 'Semua'
-                st.experimental_rerun()  # Rerun the app to reset filters
+        
         
         # Apply Filters
         filtered_df = soil_class_df.copy()
