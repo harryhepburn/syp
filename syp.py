@@ -207,7 +207,7 @@ def main():
     FELDA
 
     ### ℹ️ Perhatian
-    *Nota: Keputusan adalah anggaran berdasarkan data terdahulu (historical data).*
+    *Keputusan adalah anggaran berdasarkan data terdahulu (historical data).*
     """)
 
     # Optional: Add a visual element or logo
