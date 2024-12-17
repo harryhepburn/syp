@@ -194,43 +194,43 @@ def main():
             # Create columns for filtering
         col1, col2, col3, col4 = st.columns(4)
         
-            with col1:
-                # Kelas Tanah Filter
-                kelas_tanah_options = ['All'] + list(soil_class_df['Kelas Tanah'].unique())
-                selected_kelas_tanah = st.selectbox('Soil Class', kelas_tanah_options)
+        with col1:
+            # Kelas Tanah Filter
+            kelas_tanah_options = ['All'] + list(soil_class_df['Kelas Tanah'].unique())
+            selected_kelas_tanah = st.selectbox('Soil Class', kelas_tanah_options)
         
-            with col2:
-                # Jenis Tanah Filter
-                jenis_tanah_options = ['All'] + list(soil_class_df['Jenis Tanah'].unique())
-                selected_jenis_tanah = st.selectbox('Soil Type', jenis_tanah_options)
+         with col2:
+            # Jenis Tanah Filter
+            jenis_tanah_options = ['All'] + list(soil_class_df['Jenis Tanah'].unique())
+            selected_jenis_tanah = st.selectbox('Soil Type', jenis_tanah_options)
         
-            with col3:
-                # Kod Filter
-                kod_options = ['All'] + list(soil_class_df['Kod'].unique())
-                selected_kod = st.selectbox('Soil Code', kod_options)
+        with col3:
+            # Kod Filter
+            kod_options = ['All'] + list(soil_class_df['Kod'].unique())
+            selected_kod = st.selectbox('Soil Code', kod_options)
         
-            with col4:
-                # Kumpulan Filter
-                kumpulan_options = ['All'] + list(map(str, soil_class_df['Kumpulan'].unique()))
-                selected_kumpulan = st.selectbox('Group', kumpulan_options)
+        with col4:
+            # Kumpulan Filter
+            kumpulan_options = ['All'] + list(map(str, soil_class_df['Kumpulan'].unique()))
+            selected_kumpulan = st.selectbox('Group', kumpulan_options)
         
-            # Apply Filters
-            filtered_df = soil_class_df.copy()
+        # Apply Filters
+        filtered_df = soil_class_df.copy()
         
-            if selected_kelas_tanah != 'All':
-                filtered_df = filtered_df[filtered_df['Kelas Tanah'] == selected_kelas_tanah]
+        if selected_kelas_tanah != 'All':
+            filtered_df = filtered_df[filtered_df['Kelas Tanah'] == selected_kelas_tanah]
         
-            if selected_jenis_tanah != 'All':
-                filtered_df = filtered_df[filtered_df['Jenis Tanah'] == selected_jenis_tanah]
+        if selected_jenis_tanah != 'All':
+            filtered_df = filtered_df[filtered_df['Jenis Tanah'] == selected_jenis_tanah]
         
-            if selected_kod != 'All':
-                filtered_df = filtered_df[filtered_df['Kod'] == selected_kod]
+        if selected_kod != 'All':
+            filtered_df = filtered_df[filtered_df['Kod'] == selected_kod]
         
-            if selected_kumpulan != 'All':
-                filtered_df = filtered_df[filtered_df['Kumpulan'] == int(selected_kumpulan)]
+        if selected_kumpulan != 'All':
+            filtered_df = filtered_df[filtered_df['Kumpulan'] == int(selected_kumpulan)]
         
-            # Display Filtered Results
-            st.dataframe(filtered_df, use_container_width=True)
+        # Display Filtered Results
+        st.dataframe(filtered_df, use_container_width=True)
         
     
     # Footer
